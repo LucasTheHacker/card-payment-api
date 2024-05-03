@@ -189,13 +189,13 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
         }  
     }
 
-    public static String cardValidationPadronization(CardPayment cardPayment) {
+    public static void cardValidationPadronization(CardPayment cardPayment) {
         if (cardPayment.getNumeroCartao().length() > 21) {
             throw new DomainException("Card number is longer than expected");
         }
-        String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "");
-        if (CardPayment.isLong(cPFCNPJ)) {
-            return cPFCNPJ;
+        String cardNumber = cardPayment.getNumeroCartao().trim().replace(".", "").replace("-", "");
+        if (CardPayment.isLong(cardNumber)) {
+            cardPayment.setNumeroCartao(cardNumber);
         }
         else {
             throw new DomainException("Card number must be numeric");
