@@ -1,16 +1,17 @@
-//CONTROLADOR DE REQUISIÇÕES REST
+//CONTROLADOR DE REQUISICOES REST
 
 package io.github.lucasthehacker.apipagamentocartao.rest;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.model.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
+//import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestAPI;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
+//import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
+//import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -25,23 +26,35 @@ public class PaymentOperations {
     @POST
     @Transactional
     public Response createPaymentAPI(PaymentRequestAPI paymentRequestAPI) {
-        CardPayment cardPayment = new CardPayment(); //Id gerado automatico) 
 
-        cardPayment.setNumeroCartao(paymentRequestAPI.getNumeroCartao());
+            CardPayment cardPayment = new CardPayment();
 
-        cardPayment.setTipoPessoa(paymentRequestAPI.getTipoPessoa());
+            cardPayment.setTipoPessoa(paymentRequestAPI.getTipoPessoa());
+            
+            cardPayment.setNumeroCartao(paymentRequestAPI.getNumeroCartao()); //depende do tipo pessoa
+                    
+            cardPayment.setcPFCNPJCliente(paymentRequestAPI.getcPFCNPJCliente());
+            
+            cardPayment.setMesVencimentoCartao(paymentRequestAPI.getMesVencimentoCartao());
 
-        cardPayment.setcPFCNPJCliente(paymentRequestAPI.getcPFCNPJCliente());
+            cardPayment.setAnoVencimentoCartao(paymentRequestAPI.getAnoVencimentoCartao());
+            
+            cardPayment.setcVV(paymentRequestAPI.getcVV());
 
-        cardPayment.setMesVencimentoCartao(paymentRequestAPI.getMesVencimentoCartao());
+            CardPayment.personTypeValidation(cardPayment);
 
-        cardPayment.setAnoVencimentoCartao(paymentRequestAPI.getAnoVencimentoCartao());
+            CardPayment.cardValidationPadronization(cardPayment);
 
-        cardPayment.setcVV(paymentRequestAPI.getcVV());
+            CardPayment.cPFCNPJValidationPadronization(cardPayment);
 
-        cardPayment.persist();
+            CardPayment.cardDateValidation(cardPayment);
 
-        return Response.ok(cardPayment).build();
+            CardPayment.cVVValidationPadronization(cardPayment);
+
+            cardPayment.persist(); 
+
+            return Response.ok(cardPayment).build();
+
     }
 
     @GET
@@ -52,7 +65,7 @@ public class PaymentOperations {
         return Response.ok(query.list()).build();
     }
 
-    @PUT
+    /*@PUT
     @Transactional
     public Response updatePaymentDataAPI() {
         return Response.ok().build();
@@ -61,5 +74,5 @@ public class PaymentOperations {
     @DELETE
     public Response deletePaymentDataAPI() {
         return Response.ok().build();
-    }
+    }*/
 }
