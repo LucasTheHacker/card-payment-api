@@ -42,6 +42,8 @@ public class PaymentOperations {
             
             cardPayment.setcVV(paymentRequestAPI.getcVV());
 
+            cardPayment.setValorPagamento(paymentRequestAPI.getValorPagamento());
+
             Validation.personTypeValidation(cardPayment);
 
             Validation.cardValidationPadronization(cardPayment);
@@ -51,6 +53,8 @@ public class PaymentOperations {
             Validation.cardDateValidation(cardPayment);
 
             Validation.cVVValidationPadronization(cardPayment);
+
+            Validation.valorPagamentoValidation(cardPayment);
 
             cardPayment.persist(); 
 

@@ -14,6 +14,16 @@ public class PaymentRequestAPI { // CLASSE QUE SERÁ ASSOCIADA AO JSON RECEBIDO
 
     private String cVV;
 
+    private String valorPagamento;
+
+    public String getValorPagamento() {
+        return valorPagamento;
+    }
+
+    public void setValorPagamento(String valorPagamento) {
+        this.valorPagamento = valorPagamento;
+    }
+
     public String getNumeroCartao() {
         return numeroCartao;
     }

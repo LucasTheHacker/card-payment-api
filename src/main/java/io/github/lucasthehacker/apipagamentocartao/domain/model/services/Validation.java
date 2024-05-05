@@ -4,6 +4,8 @@ import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPay
 import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 
 import java.time.LocalDate;
+import java.util.Locale;
+
 
 public class Validation {
 
@@ -14,6 +16,26 @@ public class Validation {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public static boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean valorPagamentoValidation(CardPayment cardPayment) {
+        cardPayment.setValorPagamento(cardPayment.getValorPagamento().replace(",", "."));
+        if (isDouble(cardPayment.getValorPagamento())) {
+            return true;
+        }
+        if (isDouble(cardPayment.getValorPagamento())) {
+            return true;
+        }
+        throw new DomainException("Unexpected error in valorPagamento");
     }
 
 

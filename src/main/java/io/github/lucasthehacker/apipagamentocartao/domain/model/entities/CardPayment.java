@@ -2,9 +2,9 @@
 
 package io.github.lucasthehacker.apipagamentocartao.domain.model.entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
@@ -33,6 +33,35 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
 
     @Column(name = "CVV")
     private String cVV;
+
+    @Column(name = "ValorPagamento")
+    private String valorPagamento;
+
+    @Column(name = "DataPagamento")
+    private String dataPagamento;
+
+    
+    public CardPayment() {
+        LocalDateTime horaPagamento = LocalDateTime.now();
+        DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        setDataPagamento(horaPagamento.format(formatadorPagamento));
+    }
+    
+    public String getValorPagamento() {
+        return valorPagamento;
+    }
+
+    public void setValorPagamento(String valorPagamento) {
+        this.valorPagamento = valorPagamento;
+    }
+
+    public String getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(String dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
 
     public Integer getNumeroPagamento() {
         return numeroPagamento;
@@ -90,67 +119,8 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
         this.cVV = cVV;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((numeroPagamento == null) ? 0 : numeroPagamento.hashCode());
-        result = prime * result + ((numeroCartao == null) ? 0 : numeroCartao.hashCode());
-        result = prime * result + ((tipoPessoa == null) ? 0 : tipoPessoa.hashCode());
-        result = prime * result + ((cPFCNPJCliente == null) ? 0 : cPFCNPJCliente.hashCode());
-        result = prime * result + ((mesVencimentoCartao == null) ? 0 : mesVencimentoCartao.hashCode());
-        result = prime * result + ((anoVencimentoCartao == null) ? 0 : anoVencimentoCartao.hashCode());
-        result = prime * result + ((cVV == null) ? 0 : cVV.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CardPayment other = (CardPayment) obj;
-        if (numeroPagamento == null) {
-            if (other.numeroPagamento != null)
-                return false;
-        } else if (!numeroPagamento.equals(other.numeroPagamento))
-            return false;
-        if (numeroCartao == null) {
-            if (other.numeroCartao != null)
-                return false;
-        } else if (!numeroCartao.equals(other.numeroCartao))
-            return false;
-        if (tipoPessoa == null) {
-            if (other.tipoPessoa != null)
-                return false;
-        } else if (!tipoPessoa.equals(other.tipoPessoa))
-            return false;
-        if (cPFCNPJCliente == null) {
-            if (other.cPFCNPJCliente != null)
-                return false;
-        } else if (!cPFCNPJCliente.equals(other.cPFCNPJCliente))
-            return false;
-        if (mesVencimentoCartao == null) {
-            if (other.mesVencimentoCartao != null)
-                return false;
-        } else if (!mesVencimentoCartao.equals(other.mesVencimentoCartao))
-            return false;
-        if (anoVencimentoCartao == null) {
-            if (other.anoVencimentoCartao != null)
-                return false;
-        } else if (!anoVencimentoCartao.equals(other.anoVencimentoCartao))
-            return false;
-        if (cVV == null) {
-            if (other.cVV != null)
-                return false;
-        } else if (!cVV.equals(other.cVV))
-            return false;
-        return true;
-    }
-
+    
+    
     /*public static boolean isLong(String str) {
         try {
             Long.parseLong(str);
@@ -238,6 +208,94 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
         }
         throw new DomainException("Unexpected error in CVV");
     }*/
+
+
+    @Override
+    public String toString() {
+        return "CardPayment [numeroPagamento=" + numeroPagamento + ", numeroCartao=" + numeroCartao + ", tipoPessoa="
+                + tipoPessoa + ", cPFCNPJCliente=" + cPFCNPJCliente + ", mesVencimentoCartao=" + mesVencimentoCartao
+                + ", anoVencimentoCartao=" + anoVencimentoCartao + ", cVV=" + cVV + ", valorPagamento=" + valorPagamento
+                + ", dataPagamento=" + dataPagamento + ", getValorPagamento()=" + getValorPagamento()
+                + ", getDataPagamento()=" + getDataPagamento() + ", getNumeroPagamento()=" + getNumeroPagamento()
+                + ", getNumeroCartao()=" + getNumeroCartao() + ", getTipoPessoa()=" + getTipoPessoa()
+                + ", getcPFCNPJCliente()=" + getcPFCNPJCliente() + ", getClass()=" + getClass()
+                + ", getMesVencimentoCartao()=" + getMesVencimentoCartao() + ", getAnoVencimentoCartao()="
+                + getAnoVencimentoCartao() + ", isPersistent()=" + isPersistent() + ", getcVV()=" + getcVV()
+                + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((numeroPagamento == null) ? 0 : numeroPagamento.hashCode());
+        result = prime * result + ((numeroCartao == null) ? 0 : numeroCartao.hashCode());
+        result = prime * result + ((tipoPessoa == null) ? 0 : tipoPessoa.hashCode());
+        result = prime * result + ((cPFCNPJCliente == null) ? 0 : cPFCNPJCliente.hashCode());
+        result = prime * result + ((mesVencimentoCartao == null) ? 0 : mesVencimentoCartao.hashCode());
+        result = prime * result + ((anoVencimentoCartao == null) ? 0 : anoVencimentoCartao.hashCode());
+        result = prime * result + ((cVV == null) ? 0 : cVV.hashCode());
+        result = prime * result + ((valorPagamento == null) ? 0 : valorPagamento.hashCode());
+        result = prime * result + ((dataPagamento == null) ? 0 : dataPagamento.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CardPayment other = (CardPayment) obj;
+        if (numeroPagamento == null) {
+            if (other.numeroPagamento != null)
+                return false;
+        } else if (!numeroPagamento.equals(other.numeroPagamento))
+            return false;
+        if (numeroCartao == null) {
+            if (other.numeroCartao != null)
+                return false;
+        } else if (!numeroCartao.equals(other.numeroCartao))
+            return false;
+        if (tipoPessoa == null) {
+            if (other.tipoPessoa != null)
+                return false;
+        } else if (!tipoPessoa.equals(other.tipoPessoa))
+            return false;
+        if (cPFCNPJCliente == null) {
+            if (other.cPFCNPJCliente != null)
+                return false;
+        } else if (!cPFCNPJCliente.equals(other.cPFCNPJCliente))
+            return false;
+        if (mesVencimentoCartao == null) {
+            if (other.mesVencimentoCartao != null)
+                return false;
+        } else if (!mesVencimentoCartao.equals(other.mesVencimentoCartao))
+            return false;
+        if (anoVencimentoCartao == null) {
+            if (other.anoVencimentoCartao != null)
+                return false;
+        } else if (!anoVencimentoCartao.equals(other.anoVencimentoCartao))
+            return false;
+        if (cVV == null) {
+            if (other.cVV != null)
+                return false;
+        } else if (!cVV.equals(other.cVV))
+            return false;
+        if (valorPagamento == null) {
+            if (other.valorPagamento != null)
+                return false;
+        } else if (!valorPagamento.equals(other.valorPagamento))
+            return false;
+        if (dataPagamento == null) {
+            if (other.dataPagamento != null)
+                return false;
+        } else if (!dataPagamento.equals(other.dataPagamento))
+            return false;
+        return true;
+    }
 
     @Override
     public void close() throws Exception {
