@@ -151,7 +151,7 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
         return true;
     }
 
-    public static boolean isLong(String str) {
+    /*public static boolean isLong(String str) {
         try {
             Long.parseLong(str);
             return true;
@@ -237,7 +237,7 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
             }
         }
         throw new DomainException("Unexpected error in CVV");
-    }
+    }*/
 
     @Override
     public void close() throws Exception {

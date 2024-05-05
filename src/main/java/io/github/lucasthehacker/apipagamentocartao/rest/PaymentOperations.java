@@ -4,6 +4,7 @@ package io.github.lucasthehacker.apipagamentocartao.rest;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
 //import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
+import io.github.lucasthehacker.apipagamentocartao.domain.model.services.Validation;
 import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestAPI;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
@@ -31,7 +32,7 @@ public class PaymentOperations {
 
             cardPayment.setTipoPessoa(paymentRequestAPI.getTipoPessoa());
             
-            cardPayment.setNumeroCartao(paymentRequestAPI.getNumeroCartao()); //depende do tipo pessoa
+            cardPayment.setNumeroCartao(paymentRequestAPI.getNumeroCartao());
                     
             cardPayment.setcPFCNPJCliente(paymentRequestAPI.getcPFCNPJCliente());
             
@@ -41,15 +42,15 @@ public class PaymentOperations {
             
             cardPayment.setcVV(paymentRequestAPI.getcVV());
 
-            CardPayment.personTypeValidation(cardPayment);
+            Validation.personTypeValidation(cardPayment);
 
-            CardPayment.cardValidationPadronization(cardPayment);
+            Validation.cardValidationPadronization(cardPayment);
 
-            CardPayment.cPFCNPJValidationPadronization(cardPayment);
+            Validation.cPFCNPJValidationPadronization(cardPayment);
 
-            CardPayment.cardDateValidation(cardPayment);
+            Validation.cardDateValidation(cardPayment);
 
-            CardPayment.cVVValidationPadronization(cardPayment);
+            Validation.cVVValidationPadronization(cardPayment);
 
             cardPayment.persist(); 
 
