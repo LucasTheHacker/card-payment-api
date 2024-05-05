@@ -2,10 +2,7 @@ package io.github.lucasthehacker.apipagamentocartao.domain.model.services;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
 import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
-
 import java.time.LocalDate;
-import java.util.Locale;
-
 
 public class Validation {
 
@@ -37,7 +34,6 @@ public class Validation {
         }
         throw new DomainException("Unexpected error in valorPagamento");
     }
-
 
     public static void cPFCNPJValidationPadronization(CardPayment cardPayment) {
         if (cardPayment.getTipoPessoa() == 1) {
@@ -78,7 +74,6 @@ public class Validation {
         else {
             throw new DomainException("Card number must be numeric");
         }
-
     }
 
     public static Integer personTypeValidation(CardPayment cardPayment) {
@@ -116,6 +111,5 @@ public class Validation {
                 throw new DomainException("Unexpected error in CVV");
             }
         }
-
     }
 }

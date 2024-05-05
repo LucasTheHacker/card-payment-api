@@ -1,18 +1,15 @@
-//Mapeamento JPA da entidade PagamentoCartao --> Tabela no Banco de Dados
-
 package io.github.lucasthehacker.apipagamentocartao.domain.model.entities;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pagamentos")
-public class CardPayment extends PanacheEntityBase implements AutoCloseable {  //Provedor de opera��es e queries
+public class CardPayment extends PanacheEntityBase implements AutoCloseable {  //Try-catch support
 
-    @Id //indica��o de PK
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer numeroPagamento; 
 
@@ -119,97 +116,6 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
         this.cVV = cVV;
     }
 
-    
-    
-    /*public static boolean isLong(String str) {
-        try {
-            Long.parseLong(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-
-    public static void cPFCNPJValidationPadronization(CardPayment cardPayment) {
-        if (cardPayment.getTipoPessoa() == 1) {
-            if (cardPayment.getcPFCNPJCliente().length() > 17) {  //Aceita com espaço no final
-                throw new DomainException("CPF is longer than expected");
-            }
-            String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
-            if (CardPayment.isLong(cPFCNPJ)) {
-                cardPayment.setcPFCNPJCliente(cPFCNPJ);
-            }
-            else {
-            throw new DomainException("CPF must be numeric");
-            }
-            
-        }
-        else {
-            if (cardPayment.getcPFCNPJCliente().length() > 20) {  //Aceita com espaço no final
-                throw new DomainException("CNPJ is longer than expected");
-            }
-            String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
-            if (CardPayment.isLong(cPFCNPJ)) {
-                cardPayment.setcPFCNPJCliente(cPFCNPJ);
-            }
-            else {
-                throw new DomainException("CNPJ must be numeric");
-            }
-        }  
-    }
-
-    public static void cardValidationPadronization(CardPayment cardPayment) {
-        if (cardPayment.getNumeroCartao().length() > 21) {
-            throw new DomainException("Card number is longer than expected");
-        }
-        String cardNumber = cardPayment.getNumeroCartao().trim().replace(".", "").replace("-", "");
-        if (CardPayment.isLong(cardNumber)) {
-            cardPayment.setNumeroCartao(cardNumber);
-        }
-        else {
-            throw new DomainException("Card number must be numeric");
-        }
-        
-    }
-
-    public static Integer personTypeValidation(CardPayment cardPayment) {
-        if (cardPayment.getTipoPessoa() == 1 || cardPayment.getTipoPessoa() == 2) {
-            return cardPayment.getTipoPessoa();
-        }
-        else {
-            throw new DomainException("Person Type must be '1' for PF or '2' for PJ");
-        }
-    }
-
-    public static void cardDateValidation(CardPayment cardPayment) {
-        Integer mes = cardPayment.getMesVencimentoCartao();
-        Integer ano = cardPayment.getAnoVencimentoCartao();
-
-        if (ano == 2024) {
-            if (mes < LocalDate.now().getMonthValue()) {
-                throw new DomainException("Card is expired");
-            }
-        }
-        else if (ano < 2024) {
-            throw new DomainException("Card is expired");
-        }
-    }
-
-    public static String cVVValidationPadronization (CardPayment cardPayment) {
-        if (cardPayment.getcVV().length() > 6) {
-            throw new DomainException("CVV is longer than expected");
-        }
-        else {
-            String cVV = cardPayment.getcVV().trim();
-            if (isLong(cVV)) {
-                return cVV;
-            }
-        }
-        throw new DomainException("Unexpected error in CVV");
-    }*/
-
-
     @Override
     public String toString() {
         return "CardPayment [numeroPagamento=" + numeroPagamento + ", numeroCartao=" + numeroCartao + ", tipoPessoa="
@@ -299,7 +205,6 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
 
     @Override
     public void close() throws Exception {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'close'");
     }
     

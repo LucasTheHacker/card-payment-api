@@ -1,6 +1,6 @@
 package io.github.lucasthehacker.apipagamentocartao.rest.dto;
 
-public class PaymentRequestAPI { // CLASSE QUE SERÁ ASSOCIADA AO JSON RECEBIDO
+public class PaymentRequestAPI { 
 
     private String numeroCartao;
 
@@ -126,49 +126,4 @@ public class PaymentRequestAPI { // CLASSE QUE SERÁ ASSOCIADA AO JSON RECEBIDO
             return false;
         return true;
     }
-
-    /*public static String padronizeCardNumber(String cardNumber) {
-        try {
-            String traceless = cardNumber.replace("-", "").trim();
-            String spaceless = traceless.replace(" ", "");
-            return spaceless;
-        } catch (Exception e) {
-            return "Erro ao informar o numero do cartao: " + e.getMessage();
-        }
-    }
-
-    public static boolean verifyPersonType(Integer personType) {
-        if (personType == 1 || personType == 2) {
-            return true;
-        } else
-            throw new InputMismatchException("TipoPessoa must be '1' or '2'");
-
-    }
-
-    /*public static String padronizeCPFCNPJ(String cPFCNPJ) {
-        try {
-            String dotless = cPFCNPJ.replace(".", "").trim();
-            String traceless = dotless.replace("-", "");
-            return traceless;
-        } catch (Exception e) {
-            return "Erro ao informar o numero do cartao: " + e.getMessage();
-        }
-    }*/
-
-    /* public static boolean verifyDate(Integer mes, Integer ano) {
-        if (ano < 2024) {
-            return false;
-        }
-        else if (ano == 2024) {
-            if ( mes < 5) {
-                return false;
-            }
-        }
-        else {
-            return true;
-        }
-        return true;
-    } */
-
-
 }
