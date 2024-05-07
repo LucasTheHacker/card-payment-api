@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - C:\temp\api-pagamento-cartao\postgres:/var/lib/postgresql/data
+      - C:\temp\api-pagamento-cartao\docker-entrypoint-initdb.d\cartoes.sql:/docker-entrypoint-initdb.d/cartoes.sql
+    ports:
+      - 2222:5432
+
+  api:
+    build:
+      context: C:\temp\api-pagamento-cartao\src\main\docker
+      dockerfile: Dockerfile.jvm
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db

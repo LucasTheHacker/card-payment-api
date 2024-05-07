@@ -1,3 +1,7 @@
+CREATE DATABASE cartoes;
+
+\c cartoes;
+
 CREATE TABLE Pagamentos (
     NumeroPagamento SERIAL PRIMARY KEY,
 

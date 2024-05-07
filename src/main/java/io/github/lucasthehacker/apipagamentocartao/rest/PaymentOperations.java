@@ -1,5 +1,3 @@
-//CONTROLADOR DE REQUISICOES REST
-
 package io.github.lucasthehacker.apipagamentocartao.rest;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
