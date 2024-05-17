@@ -4,6 +4,8 @@ import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPay
 import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 import java.time.LocalDate;
 
+import com.aayushatharva.brotli4j.common.annotations.Local;
+
 public class Validation {
 
     public static boolean isLong(String str) {
@@ -89,12 +91,14 @@ public class Validation {
         Integer mes = cardPayment.getMesVencimentoCartao();
         Integer ano = cardPayment.getAnoVencimentoCartao();
 
-        if (ano == 2024) {
-            if (mes < LocalDate.now().getMonthValue()) {
+        Integer anoAtual = LocalDate.now().getYear();
+
+        if (ano == anoAtual ) {
+            if (mes >= LocalDate.now().getMonthValue()) {
                 throw new DomainException("Card is expired");
             }
         }
-        else if (ano < 2024) {
+        else if (ano < anoAtual) {
             throw new DomainException("Card is expired");
         }
     }
