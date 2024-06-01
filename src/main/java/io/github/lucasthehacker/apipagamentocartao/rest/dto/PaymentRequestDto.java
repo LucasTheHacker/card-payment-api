@@ -1,6 +1,6 @@
 package io.github.lucasthehacker.apipagamentocartao.rest.dto;
 
-public class PaymentRequestAPI { 
+public class PaymentRequestDto {
 
     private String numeroCartao;
 
@@ -93,7 +93,7 @@ public class PaymentRequestAPI {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        PaymentRequestAPI other = (PaymentRequestAPI) obj;
+        PaymentRequestDto other = (PaymentRequestDto) obj;
         if (numeroCartao == null) {
             if (other.numeroCartao != null)
                 return false;

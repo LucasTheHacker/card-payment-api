@@ -1,9 +1,9 @@
-package io.github.lucasthehacker.apipagamentocartao.rest;
+package io.github.lucasthehacker.apipagamentocartao.rest.resource;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
 //import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 import io.github.lucasthehacker.apipagamentocartao.domain.model.services.Validation;
-import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestAPI;
+import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -20,27 +20,27 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 
-public class PaymentOperations {
+public class PaymentResource {
 
     @POST
     @Transactional
-    public Response createPaymentAPI(PaymentRequestAPI paymentRequestAPI) {
+    public Response createPaymentAPI(PaymentRequestDto paymentRequestDto) {
 
             CardPayment cardPayment = new CardPayment();
 
-            cardPayment.setTipoPessoa(paymentRequestAPI.getTipoPessoa());
+            cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
             
-            cardPayment.setNumeroCartao(paymentRequestAPI.getNumeroCartao());
+            cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
                     
-            cardPayment.setcPFCNPJCliente(paymentRequestAPI.getcPFCNPJCliente());
+            cardPayment.setcPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
             
-            cardPayment.setMesVencimentoCartao(paymentRequestAPI.getMesVencimentoCartao());
+            cardPayment.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
 
-            cardPayment.setAnoVencimentoCartao(paymentRequestAPI.getAnoVencimentoCartao());
+            cardPayment.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
             
-            cardPayment.setcVV(paymentRequestAPI.getcVV());
+            cardPayment.setcVV(paymentRequestDto.getcVV());
 
-            cardPayment.setValorPagamento(paymentRequestAPI.getValorPagamento());
+            cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
 
             Validation.personTypeValidation(cardPayment);
 
