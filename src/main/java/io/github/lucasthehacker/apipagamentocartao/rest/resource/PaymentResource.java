@@ -1,18 +1,12 @@
 package io.github.lucasthehacker.apipagamentocartao.rest.resource;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
-//import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
+import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 import io.github.lucasthehacker.apipagamentocartao.domain.model.services.CardPaymentService;
 import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-//import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-//import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -68,14 +62,31 @@ public class PaymentResource {
         return Response.ok(query.list()).build();
     }
 
-    /*@PUT
+    @PUT
+    @Path("/{paymentNumber}")
     @Transactional
-    public Response updatePaymentDataAPI() {
+    public Response updateCardPayment(@PathParam("paymentNumber") Integer paymentNumber, PaymentRequestDto paymentRequestDto) {
+
+        CardPayment cardPayment = CardPayment.findById(paymentNumber);
+
+
         return Response.ok().build();
     }
 
     @DELETE
-    public Response deletePaymentDataAPI() {
+    @Path("/{numeroPagamento}")
+    @Transactional
+    public Response deleteCardPayment(@PathParam("numeroPagamento") Integer numeroPagamento) {
+
+        CardPayment cardPayment = CardPayment.findById(numeroPagamento);
+
+        if (cardPayment != null) {
+            cardPayment.delete();
+        }
+        else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
         return Response.ok().build();
-    }*/
+    }
 }
