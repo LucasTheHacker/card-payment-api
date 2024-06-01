@@ -2,7 +2,7 @@ package io.github.lucasthehacker.apipagamentocartao.rest.resource;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
 //import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
-import io.github.lucasthehacker.apipagamentocartao.domain.model.services.Validation;
+import io.github.lucasthehacker.apipagamentocartao.domain.model.services.CardPaymentService;
 import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
@@ -42,17 +42,17 @@ public class PaymentResource {
 
             cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
 
-            Validation.personTypeValidation(cardPayment);
+            CardPaymentService.personTypeValidation(cardPayment);
 
-            Validation.cardValidationPadronization(cardPayment);
+            CardPaymentService.cardValidationPadronization(cardPayment);
 
-            Validation.cPFCNPJValidationPadronization(cardPayment);
+            CardPaymentService.cPFCNPJValidationPadronization(cardPayment);
 
-            Validation.cardDateValidation(cardPayment);
+            CardPaymentService.cardDateValidation(cardPayment);
 
-            Validation.cVVValidationPadronization(cardPayment);
+            CardPaymentService.cVVValidationPadronization(cardPayment);
 
-            Validation.valorPagamentoValidation(cardPayment);
+            CardPaymentService.valorPagamentoValidation(cardPayment);
 
             cardPayment.persist(); 
 

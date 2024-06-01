@@ -4,9 +4,7 @@ import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPay
 import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
 import java.time.LocalDate;
 
-import com.aayushatharva.brotli4j.common.annotations.Local;
-
-public class Validation {
+public class CardPaymentService {
 
     public static boolean isLong(String str) {
         try {
