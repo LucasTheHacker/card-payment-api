@@ -5,7 +5,7 @@ import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.DomainExcep
 
 import java.time.LocalDate;
 
-public class CardPaymentService {
+public class CardPaymentValidation {
 
     public static boolean isLong(String str) {
         try {

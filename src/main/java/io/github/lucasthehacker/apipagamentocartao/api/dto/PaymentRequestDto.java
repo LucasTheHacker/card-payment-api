@@ -1,4 +1,4 @@
-package io.github.lucasthehacker.apipagamentocartao.rest.dto;
+package io.github.lucasthehacker.apipagamentocartao.api.dto;
 
 public class PaymentRequestDto {
 

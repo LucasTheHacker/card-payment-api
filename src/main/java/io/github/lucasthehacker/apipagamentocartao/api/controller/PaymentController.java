@@ -1,8 +1,8 @@
-package io.github.lucasthehacker.apipagamentocartao.rest.resource;
+package io.github.lucasthehacker.apipagamentocartao.api.controller;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
-import io.github.lucasthehacker.apipagamentocartao.domain.services.CardPaymentService;
-import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestDto;
+import io.github.lucasthehacker.apipagamentocartao.domain.services.CardPaymentValidation;
+import io.github.lucasthehacker.apipagamentocartao.api.dto.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 
-public class PaymentResource {
+public class PaymentController {
 
     @POST
     @Transactional
@@ -35,17 +35,17 @@ public class PaymentResource {
 
             cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
 
-            CardPaymentService.personTypeValidation(cardPayment);
+            CardPaymentValidation.personTypeValidation(cardPayment);
 
-            CardPaymentService.cardValidationPadronization(cardPayment);
+            CardPaymentValidation.cardValidationPadronization(cardPayment);
 
-            CardPaymentService.cPFCNPJValidationPadronization(cardPayment);
+            CardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
 
-            CardPaymentService.cardDateValidation(cardPayment);
+            CardPaymentValidation.cardDateValidation(cardPayment);
 
-            CardPaymentService.cVVValidationPadronization(cardPayment);
+            CardPaymentValidation.cVVValidationPadronization(cardPayment);
 
-            CardPaymentService.valorPagamentoValidation(cardPayment);
+            CardPaymentValidation.valorPagamentoValidation(cardPayment);
 
             cardPayment.persist(); 
 
@@ -82,17 +82,17 @@ public class PaymentResource {
 
         cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
 
-        CardPaymentService.personTypeValidation(cardPayment);
+        CardPaymentValidation.personTypeValidation(cardPayment);
 
-        CardPaymentService.cardValidationPadronization(cardPayment);
+        CardPaymentValidation.cardValidationPadronization(cardPayment);
 
-        CardPaymentService.cPFCNPJValidationPadronization(cardPayment);
+        CardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
 
-        CardPaymentService.cardDateValidation(cardPayment);
+        CardPaymentValidation.cardDateValidation(cardPayment);
 
-        CardPaymentService.cVVValidationPadronization(cardPayment);
+        CardPaymentValidation.cVVValidationPadronization(cardPayment);
 
-        CardPaymentService.valorPagamentoValidation(cardPayment);
+        CardPaymentValidation.valorPagamentoValidation(cardPayment);
 
 
         return Response.ok().build();
