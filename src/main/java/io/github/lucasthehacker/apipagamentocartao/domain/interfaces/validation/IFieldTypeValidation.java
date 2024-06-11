@@ -1,4 +1,4 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.interfaces;
+package io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
 

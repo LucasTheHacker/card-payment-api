@@ -1,4 +1,4 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.entities;
+package io.github.lucasthehacker.apipagamentocartao.persistence.entitity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -6,11 +6,31 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "pagamentos")
+@Table(name = "Pagamentos")
+@NamedNativeQueries(
+        @NamedNativeQuery(
+                name = "CONSULTAR_PAGAMENTO_POR_ID",
+                query = "SELECT " +
+                        "Id " +
+                        "NumeroCartao " +
+                        "TipoPessoa " +
+                        "CPFCNPJCliente " +
+                        "MesVencimentoCartao " +
+                        "AnoVencimentoCartao " +
+                        "CVV " +
+                        "ValorPagamento " +
+                        "DataPagamento " +
+                        "FROM " +
+                        "Pagamentos " +
+                        "WHERE Id = :Id ",
+                resultClass = CardPayment.class
+        )
+)
 public class CardPayment extends PanacheEntityBase implements AutoCloseable {  //Try-catch support
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
     private Integer numeroPagamento; 
 
     @Column(name = "NumeroCartao")

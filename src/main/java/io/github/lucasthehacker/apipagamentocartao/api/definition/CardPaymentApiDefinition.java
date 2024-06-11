@@ -1,4 +1,4 @@
-package io.github.lucasthehacker.apipagamentocartao;
+package io.github.lucasthehacker.apipagamentocartao.api.definition;
 
 import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;

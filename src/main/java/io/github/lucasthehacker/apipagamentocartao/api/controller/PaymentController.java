@@ -1,6 +1,6 @@
 package io.github.lucasthehacker.apipagamentocartao.api.controller;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.persistence.entitity.CardPayment;
 import io.github.lucasthehacker.apipagamentocartao.domain.validation.CardPaymentValidation;
 import io.github.lucasthehacker.apipagamentocartao.domain.dtos.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;

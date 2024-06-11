@@ -1,9 +1,9 @@
 package io.github.lucasthehacker.apipagamentocartao.domain.validation;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.persistence.entitity.CardPayment;
 import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
-import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.ICardPaymentValidation;
-import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.IFieldTypeValidation;
+import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.ICardPaymentValidation;
+import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.IFieldTypeValidation;
 
 import java.time.LocalDate;
 

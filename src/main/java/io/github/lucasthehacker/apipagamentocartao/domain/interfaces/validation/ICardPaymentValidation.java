@@ -1,6 +1,6 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.interfaces;
+package io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.persistence.entitity.CardPayment;
 import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
 
 public interface ICardPaymentValidation {
