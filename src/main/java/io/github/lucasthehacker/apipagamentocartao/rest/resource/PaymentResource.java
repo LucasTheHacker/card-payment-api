@@ -68,6 +68,32 @@ public class PaymentResource {
 
         CardPayment cardPayment = CardPayment.findById(paymentNumber);
 
+        cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
+
+        cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
+
+        cardPayment.setcPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
+
+        cardPayment.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
+
+        cardPayment.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
+
+        cardPayment.setcVV(paymentRequestDto.getcVV());
+
+        cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
+
+        CardPaymentService.personTypeValidation(cardPayment);
+
+        CardPaymentService.cardValidationPadronization(cardPayment);
+
+        CardPaymentService.cPFCNPJValidationPadronization(cardPayment);
+
+        CardPaymentService.cardDateValidation(cardPayment);
+
+        CardPaymentService.cVVValidationPadronization(cardPayment);
+
+        CardPaymentService.valorPagamentoValidation(cardPayment);
+
 
         return Response.ok().build();
     }
