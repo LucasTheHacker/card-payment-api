@@ -1,8 +1,8 @@
 package io.github.lucasthehacker.apipagamentocartao.api.controller;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
-import io.github.lucasthehacker.apipagamentocartao.domain.services.CardPaymentValidation;
-import io.github.lucasthehacker.apipagamentocartao.api.dto.PaymentRequestDto;
+import io.github.lucasthehacker.apipagamentocartao.domain.validation.CardPaymentValidation;
+import io.github.lucasthehacker.apipagamentocartao.domain.dtos.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -21,6 +21,9 @@ public class PaymentController {
 
             CardPayment cardPayment = new CardPayment();
 
+            CardPaymentValidation cardPaymentValidation = new CardPaymentValidation();
+
+            //RESPONSABILIDADE DO MODEL
             cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
             
             cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
@@ -35,17 +38,18 @@ public class PaymentController {
 
             cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
 
-            CardPaymentValidation.personTypeValidation(cardPayment);
+            //RESPONSABILIDADE DO VALIDATION
+            cardPaymentValidation.personTypeValidation(cardPayment);
 
-            CardPaymentValidation.cardValidationPadronization(cardPayment);
+            cardPaymentValidation.cardValidationPadronization(cardPayment);
 
-            CardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
+            cardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
 
-            CardPaymentValidation.cardDateValidation(cardPayment);
+            cardPaymentValidation.cardDateValidation(cardPayment);
 
-            CardPaymentValidation.cVVValidationPadronization(cardPayment);
+            cardPaymentValidation.cVVValidationPadronization(cardPayment);
 
-            CardPaymentValidation.valorPagamentoValidation(cardPayment);
+            cardPaymentValidation.valorPagamentoValidation(cardPayment);
 
             cardPayment.persist(); 
 
@@ -68,34 +72,44 @@ public class PaymentController {
 
         CardPayment cardPayment = CardPayment.findById(paymentNumber);
 
-        cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
+        CardPaymentValidation cardPaymentValidation = new CardPaymentValidation();
 
-        cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
+        if ( cardPayment != null ) {
 
-        cardPayment.setcPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
+            //RESPONSABILIDADE DO MODEL
+            cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
 
-        cardPayment.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
+            cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
 
-        cardPayment.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
+            cardPayment.setcPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
 
-        cardPayment.setcVV(paymentRequestDto.getcVV());
+            cardPayment.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
 
-        cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
+            cardPayment.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
 
-        CardPaymentValidation.personTypeValidation(cardPayment);
+            cardPayment.setcVV(paymentRequestDto.getcVV());
 
-        CardPaymentValidation.cardValidationPadronization(cardPayment);
+            cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
 
-        CardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
+            //RESPONSABILIDADE DO VALIDATION
+            cardPaymentValidation.personTypeValidation(cardPayment);
 
-        CardPaymentValidation.cardDateValidation(cardPayment);
+            cardPaymentValidation.cardValidationPadronization(cardPayment);
 
-        CardPaymentValidation.cVVValidationPadronization(cardPayment);
+            cardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
 
-        CardPaymentValidation.valorPagamentoValidation(cardPayment);
+            cardPaymentValidation.cardDateValidation(cardPayment);
 
+            cardPaymentValidation.cVVValidationPadronization(cardPayment);
 
-        return Response.ok().build();
+            cardPaymentValidation.valorPagamentoValidation(cardPayment);
+
+            return Response.ok(cardPayment).build();
+        }
+
+        else {
+            return  Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @DELETE

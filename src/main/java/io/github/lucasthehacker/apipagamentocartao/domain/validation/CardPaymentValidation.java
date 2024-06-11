@@ -1,13 +1,15 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.services;
+package io.github.lucasthehacker.apipagamentocartao.domain.validation;
 
 import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
-import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.DomainException;
+import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
+import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.ICardPaymentValidation;
+import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.IFieldTypeValidation;
 
 import java.time.LocalDate;
 
-public class CardPaymentValidation {
+public class CardPaymentValidation implements IFieldTypeValidation, ICardPaymentValidation {
 
-    public static boolean isLong(String str) {
+    public boolean isLong(String str) {
         try {
             Long.parseLong(str);
             return true;
@@ -16,7 +18,7 @@ public class CardPaymentValidation {
         }
     }
 
-    public static boolean isDouble(String str) {
+    public boolean isDouble(String str) {
         try {
             Double.parseDouble(str);
             return true;
@@ -25,68 +27,65 @@ public class CardPaymentValidation {
         }
     }
 
-    public static boolean valorPagamentoValidation(CardPayment cardPayment) {
+    public void valorPagamentoValidation(CardPayment cardPayment) throws CardPaymentApiException {
+
         cardPayment.setValorPagamento(cardPayment.getValorPagamento().replace(",", "."));
-        if (isDouble(cardPayment.getValorPagamento())) {
-            return true;
+
+        if (!isDouble(cardPayment.getValorPagamento())) {
+            throw new CardPaymentApiException("The value of valorPagamento must be double");
         }
-        if (isDouble(cardPayment.getValorPagamento())) {
-            return true;
-        }
-        throw new DomainException("Unexpected error in valorPagamento");
     }
 
-    public static void cPFCNPJValidationPadronization(CardPayment cardPayment) {
+    public void cPFCNPJValidationPadronization(CardPayment cardPayment)  throws  CardPaymentApiException {
+
         if (cardPayment.getTipoPessoa() == 1) {
             if (cardPayment.getcPFCNPJCliente().length() > 17) {  //Aceita com espaço no final
-                throw new DomainException("CPF is longer than expected");
+                throw new CardPaymentApiException("CPF is longer than expected");
             }
             String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
             if (isLong(cPFCNPJ)) {
                 cardPayment.setcPFCNPJCliente(cPFCNPJ);
             }
             else {
-                throw new DomainException("CPF must be numeric");
+                throw new CardPaymentApiException("CPF must be numeric");
             }
 
         }
         else {
             if (cardPayment.getcPFCNPJCliente().length() > 20) {  //Aceita com espaço no final
-                throw new DomainException("CNPJ is longer than expected");
+                throw new CardPaymentApiException("CNPJ is longer than expected");
             }
             String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
             if (isLong(cPFCNPJ)) {
                 cardPayment.setcPFCNPJCliente(cPFCNPJ);
             }
             else {
-                throw new DomainException("CNPJ must be numeric");
+                throw new CardPaymentApiException("CNPJ must be numeric");
             }
         }
     }
 
-    public static void cardValidationPadronization(CardPayment cardPayment) {
+    public void cardValidationPadronization(CardPayment cardPayment) throws CardPaymentApiException {
         if (cardPayment.getNumeroCartao().length() > 21) {
-            throw new DomainException("Card number is longer than expected");
+            throw new CardPaymentApiException("Card number is longer than expected");
         }
         String cardNumber = cardPayment.getNumeroCartao().trim().replace(".", "").replace("-", "");
         if (isLong(cardNumber)) {
             cardPayment.setNumeroCartao(cardNumber);
         }
         else {
-            throw new DomainException("Card number must be numeric");
+            throw new CardPaymentApiException("Card number must be numeric");
         }
     }
 
-    public static Integer personTypeValidation(CardPayment cardPayment) {
-        if (cardPayment.getTipoPessoa() == 1 || cardPayment.getTipoPessoa() == 2) {
-            return cardPayment.getTipoPessoa();
-        }
-        else {
-            throw new DomainException("Person Type must be '1' for PF or '2' for PJ");
+    public void personTypeValidation(CardPayment cardPayment) throws CardPaymentApiException {
+
+        if (!(cardPayment.getTipoPessoa() == 1 || cardPayment.getTipoPessoa() == 2)) {
+            throw new CardPaymentApiException("Person Type must be '1' for PF or '2' for PJ");
         }
     }
 
-    public static void cardDateValidation(CardPayment cardPayment) {
+    public void cardDateValidation(CardPayment cardPayment) throws CardPaymentApiException {
         Integer mes = cardPayment.getMesVencimentoCartao();
         Integer ano = cardPayment.getAnoVencimentoCartao();
 
@@ -94,24 +93,24 @@ public class CardPaymentValidation {
 
         if (ano == anoAtual ) {
             if (mes >= LocalDate.now().getMonthValue()) {
-                throw new DomainException("Card is expired");
+                throw new CardPaymentApiException("Card is expired");
             }
         }
         else if (ano < anoAtual) {
-            throw new DomainException("Card is expired");
+            throw new CardPaymentApiException("Card is expired");
         }
     }
 
-    public static void cVVValidationPadronization (CardPayment cardPayment) {
+    public void cVVValidationPadronization (CardPayment cardPayment) throws CardPaymentApiException {
         if (cardPayment.getcVV().length() > 6) {
-            throw new DomainException("CVV is longer than expected");
+            throw new CardPaymentApiException("CVV is longer than expected");
         }
         else {
             String cVV = cardPayment.getcVV().trim();
             if (isLong(cVV)) {
                 cardPayment.setcVV(cVV);
             } else {
-                throw new DomainException("Unexpected error in CVV");
+                throw new CardPaymentApiException("Unexpected error in CVV");
             }
         }
     }

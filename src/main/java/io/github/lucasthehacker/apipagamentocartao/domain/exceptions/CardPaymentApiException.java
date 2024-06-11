@@ -1,9 +1,9 @@
 package io.github.lucasthehacker.apipagamentocartao.domain.exceptions;
 
-public class DomainException extends RuntimeException {
+public class CardPaymentApiException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    public DomainException(String msg) {
+    public CardPaymentApiException(String msg) {
         super(msg);
     }
 
