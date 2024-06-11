@@ -10,11 +10,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/api-pagamento-cartao .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/card-payment-api .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/api-pagamento-cartao
+# docker run -i --rm -p 8080:8080 quarkus/card-payment-api
 #
 ###
 FROM quay.io/quarkus/quarkus-micro-image:2.0
