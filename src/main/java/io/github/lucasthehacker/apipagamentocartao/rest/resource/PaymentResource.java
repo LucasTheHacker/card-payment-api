@@ -1,8 +1,7 @@
 package io.github.lucasthehacker.apipagamentocartao.rest.resource;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
-import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
-import io.github.lucasthehacker.apipagamentocartao.domain.model.services.CardPaymentService;
+import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.domain.services.CardPaymentService;
 import io.github.lucasthehacker.apipagamentocartao.rest.dto.PaymentRequestDto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.transaction.Transactional;
