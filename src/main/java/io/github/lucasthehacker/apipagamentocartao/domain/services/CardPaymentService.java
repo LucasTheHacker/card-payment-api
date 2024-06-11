@@ -1,7 +1,8 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.model.services;
+package io.github.lucasthehacker.apipagamentocartao.domain.services;
 
-import io.github.lucasthehacker.apipagamentocartao.domain.model.entities.CardPayment;
-import io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions.DomainException;
+import io.github.lucasthehacker.apipagamentocartao.domain.entities.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.DomainException;
+
 import java.time.LocalDate;
 
 public class CardPaymentService {

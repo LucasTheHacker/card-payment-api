@@ -1,4 +1,4 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.model.exceptions;
+package io.github.lucasthehacker.apipagamentocartao.domain.exceptions;
 
 public class DomainException extends RuntimeException {
     private static final long serialVersionUID = 1L;

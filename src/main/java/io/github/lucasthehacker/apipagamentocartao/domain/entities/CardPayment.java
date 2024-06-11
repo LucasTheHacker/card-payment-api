@@ -1,4 +1,4 @@
-package io.github.lucasthehacker.apipagamentocartao.domain.model.entities;
+package io.github.lucasthehacker.apipagamentocartao.domain.entities;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
