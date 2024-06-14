@@ -3,30 +3,22 @@ package io.github.lucasthehacker.apipagamentocartao.persistence.entitity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "Pagamentos")
-@NamedNativeQueries(
-        @NamedNativeQuery(
-                name = "CONSULTAR_PAGAMENTO_POR_ID",
-                query = "SELECT " +
-                        "Id " +
-                        "NumeroCartao " +
-                        "TipoPessoa " +
-                        "CPFCNPJCliente " +
-                        "MesVencimentoCartao " +
-                        "AnoVencimentoCartao " +
-                        "CVV " +
-                        "ValorPagamento " +
-                        "DataPagamento " +
-                        "FROM " +
-                        "Pagamentos " +
-                        "WHERE Id = :Id ",
-                resultClass = CardPayment.class
-        )
-)
-public class CardPayment extends PanacheEntityBase implements AutoCloseable {  //Try-catch support
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "CONSULTAR_PAGAMENTO_POR_ID", query = "SELECT Id, NumeroCartao , TipoPessoa, CPFCNPJCliente, MesVencimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento, FROM Pagamentos WHERE Id = :Id ", resultClass = CardPaymentEntity.class),
+        @NamedNativeQuery(name = "CRIA_PAGAMENTO", query = "INSERT INTO Pagamentos (NumeroCartao, TipoPessoa, CPFCNPJCliente, MesVencimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento) VALUES (:NumeroCartao :TipoPessoa, :CPFCNPJCliente, :MesVencimentoCartao, :AnoVencimentoCartao, :CVV, :ValorPagamento, :DataPagamento ) "),
+        @NamedNativeQuery(name = "LISTA_PAGAMENTOS", query = "SELECT Id, NumeroCartao, TipoPessoa, CPFCNPJCliente, MesVnecimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento FROM Pagamentos")
+})
+@RequestScoped
+public class CardPaymentEntity extends PanacheEntityBase implements AutoCloseable {  //Try-catch support
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,82 +50,10 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
     private String dataPagamento;
 
     
-    public CardPayment() {
+    public CardPaymentEntity() {
         LocalDateTime horaPagamento = LocalDateTime.now();
-        DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         setDataPagamento(horaPagamento.format(formatadorPagamento));
-    }
-    
-    public String getValorPagamento() {
-        return valorPagamento;
-    }
-
-    public void setValorPagamento(String valorPagamento) {
-        this.valorPagamento = valorPagamento;
-    }
-
-    public String getDataPagamento() {
-        return dataPagamento;
-    }
-
-    public void setDataPagamento(String dataPagamento) {
-        this.dataPagamento = dataPagamento;
-    }
-
-    public Integer getNumeroPagamento() {
-        return numeroPagamento;
-    }
-
-    public void setNumeroPagamento(Integer numeroPagamento) {
-        this.numeroPagamento = numeroPagamento;
-    }
-
-    public String getNumeroCartao() {
-        return numeroCartao;
-    }
-
-    public void setNumeroCartao(String numeroCartao) {
-        this.numeroCartao = numeroCartao;
-    }
-
-    public Integer getTipoPessoa() {
-        return tipoPessoa;
-    }
-
-    public void setTipoPessoa(Integer tipoPessoa) {
-        this.tipoPessoa = tipoPessoa;
-    }
-
-    public String getcPFCNPJCliente() {
-        return cPFCNPJCliente;
-    }
-
-    public void setcPFCNPJCliente(String cPFCNPJCliente) {
-        this.cPFCNPJCliente = cPFCNPJCliente;
-    }
-
-    public Integer getMesVencimentoCartao() {
-        return mesVencimentoCartao;
-    }
-
-    public void setMesVencimentoCartao(Integer mesVencimentoCartao) {
-        this.mesVencimentoCartao = mesVencimentoCartao;
-    }
-
-    public Integer getAnoVencimentoCartao() {
-        return anoVencimentoCartao;
-    }
-
-    public void setAnoVencimentoCartao(Integer anoVencimentoCartao) {
-        this.anoVencimentoCartao = anoVencimentoCartao;
-    }
-
-    public String getcVV() {
-        return cVV;
-    }
-
-    public void setcVV(String cVV) {
-        this.cVV = cVV;
     }
 
     @Override
@@ -144,9 +64,9 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
                 + ", dataPagamento=" + dataPagamento + ", getValorPagamento()=" + getValorPagamento()
                 + ", getDataPagamento()=" + getDataPagamento() + ", getNumeroPagamento()=" + getNumeroPagamento()
                 + ", getNumeroCartao()=" + getNumeroCartao() + ", getTipoPessoa()=" + getTipoPessoa()
-                + ", getcPFCNPJCliente()=" + getcPFCNPJCliente() + ", getClass()=" + getClass()
+                + ", getcPFCNPJCliente()=" + getCPFCNPJCliente() + ", getClass()=" + getClass()
                 + ", getMesVencimentoCartao()=" + getMesVencimentoCartao() + ", getAnoVencimentoCartao()="
-                + getAnoVencimentoCartao() + ", isPersistent()=" + isPersistent() + ", getcVV()=" + getcVV()
+                + getAnoVencimentoCartao() + ", isPersistent()=" + isPersistent() + ", getcVV()=" + getCVV()
                 + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
     }
 
@@ -174,7 +94,7 @@ public class CardPayment extends PanacheEntityBase implements AutoCloseable {  /
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CardPayment other = (CardPayment) obj;
+        CardPaymentEntity other = (CardPaymentEntity) obj;
         if (numeroPagamento == null) {
             if (other.numeroPagamento != null)
                 return false;

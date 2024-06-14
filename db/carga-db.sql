@@ -1,0 +1,13 @@
+--CREATE TABLE Pagamentos (
+--    Id INT AUTO_INCREMENT PRIMARY KEY,
+--    NumeroCartao VARCHAR(25),
+--    TipoPessoa INT,
+--    CPFCNPJCliente VARCHAR(20),
+--    MesVencimentoCartao INT,
+--    AnoVencimentoCartao INT,
+--    CVV VARCHAR(5),
+--    ValorPagamento DECIMAL,
+--    DataPagamento VARCHAR(25)
+--)
+
+--INSERT INTO Pagamentos (NumeroCartao, TipoPessoa, CPFCNPJCliente, MesVencimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento) VALUES ("111122233334444", 1, "00011122233", 12, 2025, "1111", 2500.00, "25-06-2025 14:45:21")

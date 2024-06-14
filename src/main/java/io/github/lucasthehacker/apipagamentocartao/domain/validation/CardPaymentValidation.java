@@ -1,14 +1,39 @@
 package io.github.lucasthehacker.apipagamentocartao.domain.validation;
 
-import io.github.lucasthehacker.apipagamentocartao.persistence.entitity.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.domain.models.CardPaymentModel;
 import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
 import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.ICardPaymentValidation;
 import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.IFieldTypeValidation;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 import java.time.LocalDate;
 
+@RequestScoped
 public class CardPaymentValidation implements IFieldTypeValidation, ICardPaymentValidation {
 
+    @Inject
+    CardPaymentModel cardPaymentModel;
+
+    public CardPaymentValidation(){}
+
+    public void applyValidations(CardPaymentModel cardPaymentModel) {
+
+        valorPagamentoValidation(cardPaymentModel);
+
+        cPFCNPJValidationPadronization(cardPaymentModel);
+
+        cardValidationPadronization(cardPaymentModel);
+
+        personTypeValidation(cardPaymentModel);
+
+        cardDateValidation(cardPaymentModel);
+
+        cVVValidationPadronization (cardPaymentModel);
+    }
+
+    @Override
     public boolean isLong(String str) {
         try {
             Long.parseLong(str);
@@ -18,6 +43,7 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
         }
     }
 
+    @Override
     public boolean isDouble(String str) {
         try {
             Double.parseDouble(str);
@@ -27,24 +53,26 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
         }
     }
 
-    public void valorPagamentoValidation(CardPayment cardPayment) throws CardPaymentApiException {
+    @Override
+    public void valorPagamentoValidation(CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
 
-        cardPayment.setValorPagamento(cardPayment.getValorPagamento().replace(",", "."));
+        cardPaymentModel.setValorPagamento(cardPaymentModel.getValorPagamento().replace(",", "."));
 
-        if (!isDouble(cardPayment.getValorPagamento())) {
+        if (!isDouble(cardPaymentModel.getValorPagamento())) {
             throw new CardPaymentApiException("The value of valorPagamento must be double");
         }
     }
 
-    public void cPFCNPJValidationPadronization(CardPayment cardPayment)  throws  CardPaymentApiException {
+    @Override
+    public void cPFCNPJValidationPadronization(CardPaymentModel cardPaymentModel)  throws  CardPaymentApiException {
 
-        if (cardPayment.getTipoPessoa() == 1) {
-            if (cardPayment.getcPFCNPJCliente().length() > 17) {  //Aceita com espaço no final
+        if (cardPaymentModel.getTipoPessoa() == 1) {
+            if (cardPaymentModel.getCPFCNPJCliente().length() > 17) {  //Aceita com espaço no final
                 throw new CardPaymentApiException("CPF is longer than expected");
             }
-            String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
+            String cPFCNPJ = cardPaymentModel.getCPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
             if (isLong(cPFCNPJ)) {
-                cardPayment.setcPFCNPJCliente(cPFCNPJ);
+                cardPaymentModel.setCPFCNPJCliente(cPFCNPJ);
             }
             else {
                 throw new CardPaymentApiException("CPF must be numeric");
@@ -52,12 +80,12 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
 
         }
         else {
-            if (cardPayment.getcPFCNPJCliente().length() > 20) {  //Aceita com espaço no final
+            if (cardPaymentModel.getCPFCNPJCliente().length() > 20) {  //Aceita com espaço no final
                 throw new CardPaymentApiException("CNPJ is longer than expected");
             }
-            String cPFCNPJ = cardPayment.getcPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
+            String cPFCNPJ = cardPaymentModel.getCPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
             if (isLong(cPFCNPJ)) {
-                cardPayment.setcPFCNPJCliente(cPFCNPJ);
+                cardPaymentModel.setCPFCNPJCliente(cPFCNPJ);
             }
             else {
                 throw new CardPaymentApiException("CNPJ must be numeric");
@@ -65,33 +93,36 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
         }
     }
 
-    public void cardValidationPadronization(CardPayment cardPayment) throws CardPaymentApiException {
-        if (cardPayment.getNumeroCartao().length() > 21) {
+    @Override
+    public void cardValidationPadronization(CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
+        if (cardPaymentModel.getNumeroCartao().length() > 21) {
             throw new CardPaymentApiException("Card number is longer than expected");
         }
-        String cardNumber = cardPayment.getNumeroCartao().trim().replace(".", "").replace("-", "");
+        String cardNumber = cardPaymentModel.getNumeroCartao().trim().replace(".", "").replace("-", "");
         if (isLong(cardNumber)) {
-            cardPayment.setNumeroCartao(cardNumber);
+            cardPaymentModel.setNumeroCartao(cardNumber);
         }
         else {
             throw new CardPaymentApiException("Card number must be numeric");
         }
     }
 
-    public void personTypeValidation(CardPayment cardPayment) throws CardPaymentApiException {
+    @Override
+    public void personTypeValidation(CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
 
-        if (!(cardPayment.getTipoPessoa() == 1 || cardPayment.getTipoPessoa() == 2)) {
+        if (!(cardPaymentModel.getTipoPessoa() == 1 || cardPaymentModel.getTipoPessoa() == 2)) {
             throw new CardPaymentApiException("Person Type must be '1' for PF or '2' for PJ");
         }
     }
 
-    public void cardDateValidation(CardPayment cardPayment) throws CardPaymentApiException {
-        Integer mes = cardPayment.getMesVencimentoCartao();
-        Integer ano = cardPayment.getAnoVencimentoCartao();
+    @Override
+    public void cardDateValidation(CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
+        Integer mes = cardPaymentModel.getMesVencimentoCartao();
+        Integer ano = cardPaymentModel.getAnoVencimentoCartao();
 
         Integer anoAtual = LocalDate.now().getYear();
 
-        if (ano == anoAtual ) {
+        if (ano.equals(anoAtual)) {
             if (mes >= LocalDate.now().getMonthValue()) {
                 throw new CardPaymentApiException("Card is expired");
             }
@@ -101,14 +132,15 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
         }
     }
 
-    public void cVVValidationPadronization (CardPayment cardPayment) throws CardPaymentApiException {
-        if (cardPayment.getcVV().length() > 6) {
+    @Override
+    public void cVVValidationPadronization (CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
+        if (cardPaymentModel.getCVV().length() > 6) {
             throw new CardPaymentApiException("CVV is longer than expected");
         }
         else {
-            String cVV = cardPayment.getcVV().trim();
+            String cVV = cardPaymentModel.getCVV().trim();
             if (isLong(cVV)) {
-                cardPayment.setcVV(cVV);
+                cardPaymentModel.setCVV(cVV);
             } else {
                 throw new CardPaymentApiException("Unexpected error in CVV");
             }

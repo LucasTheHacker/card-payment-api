@@ -1,68 +1,80 @@
 package io.github.lucasthehacker.apipagamentocartao.api.controller;
 
-import io.github.lucasthehacker.apipagamentocartao.persistence.entitity.CardPayment;
+import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
+import io.github.lucasthehacker.apipagamentocartao.domain.models.CardPaymentModel;
+import io.github.lucasthehacker.apipagamentocartao.persistence.dao.CardPaymentDao;
+import io.github.lucasthehacker.apipagamentocartao.persistence.entitity.CardPaymentEntity;
 import io.github.lucasthehacker.apipagamentocartao.domain.validation.CardPaymentValidation;
 import io.github.lucasthehacker.apipagamentocartao.domain.dtos.PaymentRequestDto;
+import io.github.lucasthehacker.apipagamentocartao.persistence.repository.CardPaymentRepository;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.h2.schema.Domain;
+
+import java.util.List;
+import java.util.Set;
+
 
 @Path("/pagamentos")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-
+@ApplicationScoped
 public class PaymentController {
+
+    @Inject
+    CardPaymentRepository cardPaymentRepository;
+
+    @Inject
+    CardPaymentDao cardPaymentDao;
+
+    @Inject
+    CardPaymentModel cardPaymentModel;
+
+    @Inject
+    CardPaymentValidation cardPaymentValidation;
+
 
     @POST
     @Transactional
     public Response createPaymentAPI(PaymentRequestDto paymentRequestDto) {
 
-            CardPayment cardPayment = new CardPayment();
+        try {
 
-            CardPaymentValidation cardPaymentValidation = new CardPaymentValidation();
+            cardPaymentModel.mapper(paymentRequestDto);
 
-            //RESPONSABILIDADE DO MODEL
-            cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
-            
-            cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
-                    
-            cardPayment.setcPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
-            
-            cardPayment.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
+            cardPaymentValidation.applyValidations(cardPaymentModel);
 
-            cardPayment.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
-            
-            cardPayment.setcVV(paymentRequestDto.getcVV());
+            cardPaymentDao.novoPagamento(cardPaymentModel);
 
-            cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
+        }
+        catch (CardPaymentApiException cardPaymentApiException) {
+            Log.debug(cardPaymentApiException.getMessage());
+        }
 
-            //RESPONSABILIDADE DO VALIDATION
-            cardPaymentValidation.personTypeValidation(cardPayment);
-
-            cardPaymentValidation.cardValidationPadronization(cardPayment);
-
-            cardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
-
-            cardPaymentValidation.cardDateValidation(cardPayment);
-
-            cardPaymentValidation.cVVValidationPadronization(cardPayment);
-
-            cardPaymentValidation.valorPagamentoValidation(cardPayment);
-
-            cardPayment.persist(); 
-
-            return Response.ok(cardPayment).build();
+        return Response.ok(cardPaymentEntity).build();
 
     }
+
+    @Inject
+    CardPaymentEntity cardPaymentEntity;
 
     @GET
     public Response requestPaymentDataAPI() {
 
-        PanacheQuery<CardPayment> query = CardPayment.findAll();;
-
-        return Response.ok(query.list()).build();
+        try { 
+            return Response.ok(cardPaymentRepository.buscaPagamentos()).build();
+        }
+        catch (Exception e) {
+            Log.debug("Erro while finding payments: " + e.getMessage());
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        }
     }
 
     @PUT
@@ -70,39 +82,13 @@ public class PaymentController {
     @Transactional
     public Response updateCardPayment(@PathParam("paymentNumber") Integer paymentNumber, PaymentRequestDto paymentRequestDto) {
 
-        CardPayment cardPayment = CardPayment.findById(paymentNumber);
+        CardPaymentEntity cardPayment = CardPaymentEntity.findById(paymentNumber);
 
         CardPaymentValidation cardPaymentValidation = new CardPaymentValidation();
 
         if ( cardPayment != null ) {
 
-            //RESPONSABILIDADE DO MODEL
-            cardPayment.setTipoPessoa(paymentRequestDto.getTipoPessoa());
-
-            cardPayment.setNumeroCartao(paymentRequestDto.getNumeroCartao());
-
-            cardPayment.setcPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
-
-            cardPayment.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
-
-            cardPayment.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
-
-            cardPayment.setcVV(paymentRequestDto.getcVV());
-
-            cardPayment.setValorPagamento(paymentRequestDto.getValorPagamento());
-
-            //RESPONSABILIDADE DO VALIDATION
-            cardPaymentValidation.personTypeValidation(cardPayment);
-
-            cardPaymentValidation.cardValidationPadronization(cardPayment);
-
-            cardPaymentValidation.cPFCNPJValidationPadronization(cardPayment);
-
-            cardPaymentValidation.cardDateValidation(cardPayment);
-
-            cardPaymentValidation.cVVValidationPadronization(cardPayment);
-
-            cardPaymentValidation.valorPagamentoValidation(cardPayment);
+            cardPaymentModel.mapper(paymentRequestDto);
 
             return Response.ok(cardPayment).build();
         }
@@ -117,15 +103,14 @@ public class PaymentController {
     @Transactional
     public Response deleteCardPayment(@PathParam("numeroPagamento") Integer numeroPagamento) {
 
-        CardPayment cardPayment = CardPayment.findById(numeroPagamento);
+        CardPaymentEntity cardPayment = CardPaymentEntity.findById(numeroPagamento);
 
         if (cardPayment != null) {
             cardPayment.delete();
+            return Response.ok().build();
         }
         else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-        return Response.ok().build();
     }
 }
