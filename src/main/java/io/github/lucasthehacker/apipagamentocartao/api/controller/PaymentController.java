@@ -16,8 +16,11 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import net.bytebuddy.asm.Advice;
 import org.h2.schema.Domain;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +30,9 @@ import java.util.Set;
 @Produces(MediaType.APPLICATION_JSON)
 @ApplicationScoped
 public class PaymentController {
+
+    @Inject
+    CardPaymentEntity cardPaymentEntity;
 
     @Inject
     CardPaymentRepository cardPaymentRepository;
@@ -40,6 +46,8 @@ public class PaymentController {
     @Inject
     CardPaymentValidation cardPaymentValidation;
 
+    
+
 
     @POST
     @Transactional
@@ -49,27 +57,27 @@ public class PaymentController {
 
             cardPaymentModel.mapper(paymentRequestDto);
 
-            cardPaymentValidation.applyValidations(cardPaymentModel);
+            cardPaymentRepository.persistePagamento();
 
-            cardPaymentDao.novoPagamento(cardPaymentModel);
+            cardPaymentEntity.persist();
+
+            return Response.ok(cardPaymentEntity).build();
 
         }
         catch (CardPaymentApiException cardPaymentApiException) {
             Log.debug(cardPaymentApiException.getMessage());
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
 
-        return Response.ok(cardPaymentEntity).build();
-
     }
-
-    @Inject
-    CardPaymentEntity cardPaymentEntity;
 
     @GET
     public Response requestPaymentDataAPI() {
 
         try { 
-            return Response.ok(cardPaymentRepository.buscaPagamentos()).build();
+            PanacheQuery<CardPaymentEntity> query = CardPaymentEntity.findAll();;
+
+            return Response.ok(query.list()).build();
         }
         catch (Exception e) {
             Log.debug("Erro while finding payments: " + e.getMessage());
@@ -82,15 +90,25 @@ public class PaymentController {
     @Transactional
     public Response updateCardPayment(@PathParam("paymentNumber") Integer paymentNumber, PaymentRequestDto paymentRequestDto) {
 
-        CardPaymentEntity cardPayment = CardPaymentEntity.findById(paymentNumber);
+        CardPaymentEntity cardPaymentEntity = CardPaymentEntity.findById(paymentNumber);
 
-        CardPaymentValidation cardPaymentValidation = new CardPaymentValidation();
+        if ( cardPaymentEntity != null ) {
 
-        if ( cardPayment != null ) {
+            cardPaymentEntity.setCVV(paymentRequestDto.getCVV());
+            cardPaymentEntity.setNumeroCartao(paymentRequestDto.getNumeroCartao());
+            cardPaymentEntity.setCPFCNPJCliente(paymentRequestDto.getCPFCNPJCliente());
 
-            cardPaymentModel.mapper(paymentRequestDto);
+            LocalDateTime horaPagamento = LocalDateTime.now();
+            DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
-            return Response.ok(cardPayment).build();
+            cardPaymentEntity.setDataPagamento(horaPagamento.format(formatadorPagamento));
+            cardPaymentEntity.setCVV(paymentRequestDto.getCVV());
+            cardPaymentEntity.setTipoPessoa(paymentRequestDto.getTipoPessoa());
+            cardPaymentEntity.setValorPagamento(paymentRequestDto.getValorPagamento());
+            cardPaymentEntity.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
+            cardPaymentEntity.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
+
+            return Response.ok(cardPaymentEntity).build();
         }
 
         else {
@@ -107,7 +125,7 @@ public class PaymentController {
 
         if (cardPayment != null) {
             cardPayment.delete();
-            return Response.ok().build();
+            return Response.ok(cardPayment).build();
         }
         else {
             return Response.status(Response.Status.NOT_FOUND).build();
