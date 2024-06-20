@@ -57,11 +57,22 @@ public class PaymentController {
 
             cardPaymentModel.mapper(paymentRequestDto);
 
+            if (!cardPaymentValidation.applyValidations(cardPaymentModel)) {
+                return Response
+                        .status(Response.Status.UNAUTHORIZED.getStatusCode())
+                        .entity(cardPaymentModel)
+                        .build();
+            }
+
             cardPaymentRepository.persistePagamento();
 
             cardPaymentEntity.persist();
 
-            return Response.ok(cardPaymentEntity).build();
+            return Response
+                    .status(Response.Status.CREATED.getStatusCode())
+                    .entity(cardPaymentEntity)
+                    .build();
+
 
         }
         catch (CardPaymentApiException cardPaymentApiException) {
@@ -78,6 +89,19 @@ public class PaymentController {
             PanacheQuery<CardPaymentEntity> query = CardPaymentEntity.findAll();;
 
             return Response.ok(query.list()).build();
+        }
+        catch (Exception e) {
+            Log.debug("Erro while finding payments: " + e.getMessage());
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        }
+    }
+
+    @GET
+    @Path("/hello")
+    public Response requestHello() {
+
+        try {
+            return Response.ok("Hello World Test").build();
         }
         catch (Exception e) {
             Log.debug("Erro while finding payments: " + e.getMessage());
@@ -125,10 +149,13 @@ public class PaymentController {
 
         if (cardPayment != null) {
             cardPayment.delete();
-            return Response.ok(cardPayment).build();
+            return Response
+                    .status(Response.Status.ACCEPTED)
+                    .entity(cardPayment)
+                    .build();
         }
         else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
     }
 }

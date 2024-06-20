@@ -4,6 +4,7 @@ import io.github.lucasthehacker.apipagamentocartao.domain.models.CardPaymentMode
 import io.github.lucasthehacker.apipagamentocartao.domain.exceptions.CardPaymentApiException;
 import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.ICardPaymentValidation;
 import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.IFieldTypeValidation;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -18,19 +19,27 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
 
     public CardPaymentValidation(){}
 
-    public void applyValidations(CardPaymentModel cardPaymentModel) {
+    public boolean applyValidations(CardPaymentModel cardPaymentModel) {
+        try {
+            valorPagamentoValidation(cardPaymentModel);
 
-        valorPagamentoValidation(cardPaymentModel);
+            cPFCNPJValidationPadronization(cardPaymentModel);
 
-        cPFCNPJValidationPadronization(cardPaymentModel);
+            cardValidationPadronization(cardPaymentModel);
 
-        cardValidationPadronization(cardPaymentModel);
+            personTypeValidation(cardPaymentModel);
 
-        personTypeValidation(cardPaymentModel);
+            cardDateValidation(cardPaymentModel);
 
-        cardDateValidation(cardPaymentModel);
+            cVVValidationPadronization(cardPaymentModel);
 
-        cVVValidationPadronization (cardPaymentModel);
+            Log.info("Validation Succeed");
+            return true;
+        }
+        catch (Throwable t) {
+            Log.debug("Un error ocurred in validation: " + t.getMessage());
+            return false;
+        }
     }
 
     @Override
