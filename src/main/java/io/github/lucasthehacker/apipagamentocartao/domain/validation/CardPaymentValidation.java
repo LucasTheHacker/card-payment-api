@@ -6,40 +6,46 @@ import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.
 import io.github.lucasthehacker.apipagamentocartao.domain.interfaces.validation.IFieldTypeValidation;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
 
 import java.time.LocalDate;
 
-@RequestScoped
+@ApplicationScoped
 public class CardPaymentValidation implements IFieldTypeValidation, ICardPaymentValidation {
-
-    @Inject
-    CardPaymentModel cardPaymentModel;
 
     public CardPaymentValidation(){}
 
-    public boolean applyValidations(CardPaymentModel cardPaymentModel) {
-        try {
-            valorPagamentoValidation(cardPaymentModel);
+    public void applyValidations(CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
+        Log.info(
+                "#############################################################" +
+                 "####             Iniciando validação de pagamento        ###" +
+                 "############################################################"
+        );
+        valorPagamentoValidation(cardPaymentModel);
+        Log.info(
+                "#############################################################" +
+                "####             Validação de pagamento concluída         ###" +
+                "############################################################"
+        );
 
-            cPFCNPJValidationPadronization(cardPaymentModel);
+        Log.info(
+                "#############################################################" +
+                "####             Iniciando validação de CPFCNPJ        ###" +
+                "############################################################"
+        );
+        cPFCNPJValidationPadronization(cardPaymentModel);
+        Log.info(
+                "############" + " Validação de CPFCNPJ concluída ########################"
+        );
 
-            cardValidationPadronization(cardPaymentModel);
+        cardValidationPadronization(cardPaymentModel);
 
-            personTypeValidation(cardPaymentModel);
+        personTypeValidation(cardPaymentModel);
 
-            cardDateValidation(cardPaymentModel);
+        cardDateValidation(cardPaymentModel);
 
-            cVVValidationPadronization(cardPaymentModel);
+        cVVValidationPadronization(cardPaymentModel);
 
-            Log.info("Validation Succeed");
-            return true;
-        }
-        catch (Throwable t) {
-            Log.debug("Un error ocurred in validation: " + t.getMessage());
-            return false;
-        }
+        Log.info("Validation Succeed");
     }
 
     @Override
@@ -76,7 +82,8 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
     public void cPFCNPJValidationPadronization(CardPaymentModel cardPaymentModel)  throws  CardPaymentApiException {
 
         if (cardPaymentModel.getTipoPessoa() == 1) {
-            if (cardPaymentModel.getCPFCNPJCliente().length() > 17) {  //Aceita com espaço no final
+
+            if (cardPaymentModel.getCPFCNPJCliente().length() > 17) {
                 throw new CardPaymentApiException("CPF is longer than expected");
             }
             String cPFCNPJ = cardPaymentModel.getCPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");

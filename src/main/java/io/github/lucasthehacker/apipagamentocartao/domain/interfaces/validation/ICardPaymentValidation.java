@@ -6,16 +6,16 @@ import io.github.lucasthehacker.apipagamentocartao.domain.models.CardPaymentMode
 
 public interface ICardPaymentValidation {
 
-    void valorPagamentoValidation(CardPaymentModel cardPayment) throws CardPaymentApiException;
+    void valorPagamentoValidation(CardPaymentModel cardPaymentModel) throws CardPaymentApiException;
 
-    void cPFCNPJValidationPadronization(CardPaymentModel cardPayment) throws CardPaymentApiException;
+    void cPFCNPJValidationPadronization(CardPaymentModel cardPaymentModel) throws CardPaymentApiException;
 
-    void cardValidationPadronization(CardPaymentModel cardPayment) throws  CardPaymentApiException;
+    void cardValidationPadronization(CardPaymentModel cardPaymentModel) throws  CardPaymentApiException;
 
-    void personTypeValidation(CardPaymentModel cardPayment) throws CardPaymentApiException;
+    void personTypeValidation(CardPaymentModel cardPaymentModel) throws CardPaymentApiException;
 
-    void cardDateValidation(CardPaymentModel cardPayment) throws CardPaymentApiException;
+    void cardDateValidation(CardPaymentModel cardPaymentModel) throws CardPaymentApiException;
 
-    void cVVValidationPadronization (CardPaymentModel cardPayment) throws CardPaymentApiException;
+    void cVVValidationPadronization(CardPaymentModel cardPaymentModel) throws CardPaymentApiException;
 
 }

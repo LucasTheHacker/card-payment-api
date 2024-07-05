@@ -12,17 +12,11 @@ import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import net.bytebuddy.asm.Advice;
-import org.h2.schema.Domain;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Set;
 
 
 @Path("/pagamentos")
@@ -40,32 +34,31 @@ public class PaymentController {
     @Inject
     CardPaymentDao cardPaymentDao;
 
-    @Inject
-    CardPaymentModel cardPaymentModel;
-
-    @Inject
-    CardPaymentValidation cardPaymentValidation;
-
-    
-
-
     @POST
     @Transactional
-    public Response createPaymentAPI(PaymentRequestDto paymentRequestDto) {
+    public Response createPaymentAPI(PaymentRequestDto dto) {
 
         try {
+            var cardPaymentValidation = new CardPaymentValidation();
+            var cardPaymentModel = new CardPaymentModel();
 
-            cardPaymentModel.mapper(paymentRequestDto);
+            cardPaymentModel.mapper(dto);
 
-            if (!cardPaymentValidation.applyValidations(cardPaymentModel)) {
+
+            try {
+                cardPaymentValidation.applyValidations(cardPaymentModel);
+            }
+            catch (CardPaymentApiException e) {
                 return Response
-                        .status(Response.Status.UNAUTHORIZED.getStatusCode())
-                        .entity(cardPaymentModel)
-                        .build();
+                                .status(Response.Status.UNAUTHORIZED.getStatusCode())
+                                .entity(e)
+                                .build();
             }
 
+            //Prepara o entity
             cardPaymentRepository.persistePagamento();
 
+            //To-do: substituir panache
             cardPaymentEntity.persist();
 
             return Response
@@ -118,15 +111,15 @@ public class PaymentController {
 
         if ( cardPaymentEntity != null ) {
 
-            cardPaymentEntity.setCVV(paymentRequestDto.getCVV());
+            cardPaymentEntity.setCVV(paymentRequestDto.getcVV());
             cardPaymentEntity.setNumeroCartao(paymentRequestDto.getNumeroCartao());
-            cardPaymentEntity.setCPFCNPJCliente(paymentRequestDto.getCPFCNPJCliente());
+            cardPaymentEntity.setCPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
 
             LocalDateTime horaPagamento = LocalDateTime.now();
             DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
             cardPaymentEntity.setDataPagamento(horaPagamento.format(formatadorPagamento));
-            cardPaymentEntity.setCVV(paymentRequestDto.getCVV());
+            cardPaymentEntity.setCVV(paymentRequestDto.getcVV());
             cardPaymentEntity.setTipoPessoa(paymentRequestDto.getTipoPessoa());
             cardPaymentEntity.setValorPagamento(paymentRequestDto.getValorPagamento());
             cardPaymentEntity.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
