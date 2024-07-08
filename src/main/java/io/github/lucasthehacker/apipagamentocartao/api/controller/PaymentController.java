@@ -17,6 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 
 @Path("/pagamentos")
@@ -34,16 +35,19 @@ public class PaymentController {
     @Inject
     CardPaymentDao cardPaymentDao;
 
+    @Inject
+    CardPaymentValidation cardPaymentValidation;
+
+    @Inject
+    CardPaymentModel cardPaymentModel;
+
     @POST
     @Transactional
     public Response createPaymentAPI(PaymentRequestDto dto) {
 
         try {
-            var cardPaymentValidation = new CardPaymentValidation();
-            var cardPaymentModel = new CardPaymentModel();
 
             cardPaymentModel.mapper(dto);
-
 
             try {
                 cardPaymentValidation.applyValidations(cardPaymentModel);
@@ -51,19 +55,13 @@ public class PaymentController {
             catch (CardPaymentApiException e) {
                 return Response
                                 .status(Response.Status.UNAUTHORIZED.getStatusCode())
-                                .entity(e)
+                                .entity(e.getMessage())
                                 .build();
             }
 
-            //Prepara o entity
-            cardPaymentRepository.persistePagamento();
-
-            //To-do: substituir panache
-            cardPaymentEntity.persist();
-
             return Response
                     .status(Response.Status.CREATED.getStatusCode())
-                    .entity(cardPaymentEntity)
+                    .entity(cardPaymentDao.novoPagamento())
                     .build();
 
 
@@ -78,10 +76,10 @@ public class PaymentController {
     @GET
     public Response requestPaymentDataAPI() {
 
-        try { 
-            PanacheQuery<CardPaymentEntity> query = CardPaymentEntity.findAll();;
+        try {
 
-            return Response.ok(query.list()).build();
+            return Response.status(Response.Status.FOUND).entity(cardPaymentDao.buscaTodosPagamentos()).build();
+
         }
         catch (Exception e) {
             Log.debug("Erro while finding payments: " + e.getMessage());
@@ -105,32 +103,52 @@ public class PaymentController {
     @PUT
     @Path("/{paymentNumber}")
     @Transactional
-    public Response updateCardPayment(@PathParam("paymentNumber") Integer paymentNumber, PaymentRequestDto paymentRequestDto) {
+    public Response updateCardPayment(@PathParam("paymentNumber") Integer idPgto, PaymentRequestDto dto) {
 
-        CardPaymentEntity cardPaymentEntity = CardPaymentEntity.findById(paymentNumber);
-
-        if ( cardPaymentEntity != null ) {
-
-            cardPaymentEntity.setCVV(paymentRequestDto.getcVV());
-            cardPaymentEntity.setNumeroCartao(paymentRequestDto.getNumeroCartao());
-            cardPaymentEntity.setCPFCNPJCliente(paymentRequestDto.getcPFCNPJCliente());
-
-            LocalDateTime horaPagamento = LocalDateTime.now();
-            DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
-
-            cardPaymentEntity.setDataPagamento(horaPagamento.format(formatadorPagamento));
-            cardPaymentEntity.setCVV(paymentRequestDto.getcVV());
-            cardPaymentEntity.setTipoPessoa(paymentRequestDto.getTipoPessoa());
-            cardPaymentEntity.setValorPagamento(paymentRequestDto.getValorPagamento());
-            cardPaymentEntity.setAnoVencimentoCartao(paymentRequestDto.getAnoVencimentoCartao());
-            cardPaymentEntity.setMesVencimentoCartao(paymentRequestDto.getMesVencimentoCartao());
-
-            return Response.ok(cardPaymentEntity).build();
+        if (cardPaymentDao.buscaPagamentoPorId(idPgto) == null) {
+            try {
+                throw new CardPaymentApiException("Não existe pagamento na base com o id informado.");
+            } catch (CardPaymentApiException e) {
+                return Response
+                        .status(Response.Status.NOT_FOUND.getStatusCode())
+                        .entity(e.getMessage())
+                        .build();
+            }
         }
 
-        else {
-            return  Response.status(Response.Status.NOT_FOUND).build();
+        try {
+
+            cardPaymentModel.mapper(dto);
+
+            try {
+                cardPaymentValidation.applyValidations(cardPaymentModel);
+            } catch (CardPaymentApiException e) {
+                return Response
+                        .status(Response.Status.UNAUTHORIZED.getStatusCode())
+                        .entity(e.getMessage())
+                        .build();
+            }
+
+            cardPaymentDao.atualizaPagamento(cardPaymentModel, idPgto);
+
+        } catch (CardPaymentApiException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND.getStatusCode())
+                    .entity(e.getMessage())
+                    .build();
         }
+
+        return Response
+                .status(Response.Status.MOVED_PERMANENTLY.getStatusCode())
+                .entity(cardPaymentDao.novoPagamento())
+                .build();
+    }
+
+    @GET
+    @Path("/{paymentNumber}")
+    public Response recoverPaymentData(@PathParam("paymentNumber") Integer paymentNumber) {
+
+        return Response.status(Response.Status.FOUND).entity(cardPaymentDao.buscaPagamentoPorId(paymentNumber)).build();
     }
 
     @DELETE

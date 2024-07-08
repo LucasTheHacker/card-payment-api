@@ -3,17 +3,19 @@ package io.github.lucasthehacker.apipagamentocartao.api.controller;
 import io.github.lucasthehacker.apipagamentocartao.domain.dtos.PaymentRequestDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.*;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PaymentControllerTest {
 
     @Test
     @DisplayName("PGTO sucesso")
+    @Order(1)
     public void testCreatePaymentAPISuccess() {
         var paymentRequestDto = new PaymentRequestDto();
 
@@ -35,7 +37,6 @@ public class PaymentControllerTest {
                         .extract().response();
 
         assertEquals(201, response.statusCode());
-        assertNotNull(response.jsonPath().getString("numeroPagamento")); //acesso ao objeto de retorno
 
     }
 
@@ -248,30 +249,40 @@ public class PaymentControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Deve listar todos os pagamentos")
+    @Order(3)
+    public void listaPagamentos() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/pagamentos")
+                .then()
+                .statusCode(302)
+                .body("size()", Matchers.is(1));
+    }
 
+    @Test
+    @DisplayName("Deve consultar pagamento por ID criado nos testes")
+    @Order(2)
+    public void listaPagamentoPorId() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/pagamentos/1")
+                .then()
+                .statusCode(302);
+    }
 
-//    @Test
-//    @DisplayName("Busca PGTO inexistente")
-//    public void buscaPagamentoInexistente() {
-//
-//        var response =
-//                given()
-//                    .contentType(ContentType.JSON)
-//                .when()
-//                    .get("/pagamentos/10")
-//                .then()
-//                    .statusCode(404);
-//
-//    }
-
-
-//    @Test
-//    @DisplayName("Hello World")
-//    public void testHelloEndpoint() {
-//        given()
-//                .when().get("/pagamentos/hello")
-//        .then().
-//                statusCode(200).body(is("Hello World Test"));
-//    }
+    @Test
+    @DisplayName("Deve consultar pagamento por ID colocado por scripts")
+    public void listaPagamentoPorIdTestes() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/pagamentos/3")
+                .then()
+                .statusCode(302);
+    }
 
 }

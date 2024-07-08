@@ -15,37 +15,25 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
     public CardPaymentValidation(){}
 
     public void applyValidations(CardPaymentModel cardPaymentModel) throws CardPaymentApiException {
-        Log.info(
-                "#############################################################" +
-                 "####             Iniciando validação de pagamento        ###" +
-                 "############################################################"
-        );
+        Log.info("EXECUTANDO VALIDACAO DE PAGAMENTO");
         valorPagamentoValidation(cardPaymentModel);
-        Log.info(
-                "#############################################################" +
-                "####             Validação de pagamento concluída         ###" +
-                "############################################################"
-        );
 
-        Log.info(
-                "#############################################################" +
-                "####             Iniciando validação de CPFCNPJ        ###" +
-                "############################################################"
-        );
+        Log.info("EXECUTANDO VALIDACAO DE CPF e CNPJ");
         cPFCNPJValidationPadronization(cardPaymentModel);
-        Log.info(
-                "############" + " Validação de CPFCNPJ concluída ########################"
-        );
 
+        Log.info("EXECUTANDO VALIDACAO NUMERO DE CARTAO");
         cardValidationPadronization(cardPaymentModel);
 
+        Log.info("EXECUTANDO VALIDACAO DE TIPO DE PESSOA");
         personTypeValidation(cardPaymentModel);
 
+        Log.info("EXECUTANDO VALIDACAO DE VALIDADE DO CARTAO");
         cardDateValidation(cardPaymentModel);
 
+        Log.info("EXEXCUTANDO VALIDACAO DE CVV");
         cVVValidationPadronization(cardPaymentModel);
 
-        Log.info("Validation Succeed");
+        Log.info("TODAS AS VALIDACOES OCORRERAM COM SUCESSO");
     }
 
     @Override
@@ -139,12 +127,12 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
         Integer anoAtual = LocalDate.now().getYear();
 
         if (ano.equals(anoAtual)) {
-            if (mes >= LocalDate.now().getMonthValue()) {
-                throw new CardPaymentApiException("Card is expired");
+            if (mes < LocalDate.now().getMonthValue()) {
+                throw new CardPaymentApiException("Error: Card is expired");
             }
         }
         else if (ano < anoAtual) {
-            throw new CardPaymentApiException("Card is expired");
+            throw new CardPaymentApiException("Error: Card is expired");
         }
     }
 
@@ -158,7 +146,7 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
             if (isLong(cVV)) {
                 cardPaymentModel.setCVV(cVV);
             } else {
-                throw new CardPaymentApiException("Unexpected error in CVV");
+                throw new CardPaymentApiException("Erro inesperado no CVV. Verifique se foram informados apenas caracteres numericos.");
             }
         }
     }

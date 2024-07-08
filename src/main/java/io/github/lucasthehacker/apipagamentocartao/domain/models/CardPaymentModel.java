@@ -35,6 +35,7 @@ public class CardPaymentModel {
         DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         this.setDate(horaPagamento.format(formatadorPagamento));
 
+
     }
 
 }
