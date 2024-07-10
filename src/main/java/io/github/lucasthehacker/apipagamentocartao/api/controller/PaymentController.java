@@ -15,6 +15,10 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,9 +34,6 @@ public class PaymentController {
     CardPaymentEntity cardPaymentEntity;
 
     @Inject
-    CardPaymentRepository cardPaymentRepository;
-
-    @Inject
     CardPaymentDao cardPaymentDao;
 
     @Inject
@@ -41,6 +42,14 @@ public class PaymentController {
     @Inject
     CardPaymentModel cardPaymentModel;
 
+
+    @Operation(
+            summary = "Criacao de Pagamento",
+            description = "Valida dados recebidos e os persiste no banco de dados")
+    @APIResponse(
+            responseCode = "201",
+            description = "sucesso na criacao de pagamento",
+            content = { @Content(mediaType = "application/json")})
     @POST
     @Transactional
     public Response createPaymentAPI(PaymentRequestDto dto) {
@@ -101,9 +110,9 @@ public class PaymentController {
     }
 
     @PUT
-    @Path("/{paymentNumber}")
+    @Path("/{idPgto}")
     @Transactional
-    public Response updateCardPayment(@PathParam("paymentNumber") Integer idPgto, PaymentRequestDto dto) {
+    public Response updateCardPayment(@PathParam("idPgto") Integer idPgto, PaymentRequestDto dto) {
 
         if (cardPaymentDao.buscaPagamentoPorId(idPgto) == null) {
             try {
@@ -115,7 +124,6 @@ public class PaymentController {
                         .build();
             }
         }
-
         try {
 
             cardPaymentModel.mapper(dto);
@@ -131,24 +139,31 @@ public class PaymentController {
 
             cardPaymentDao.atualizaPagamento(cardPaymentModel, idPgto);
 
+            return Response
+                    .status(Response.Status.MOVED_PERMANENTLY.getStatusCode())
+                    .entity(cardPaymentDao.buscaPagamentoPorId(idPgto))
+                    .build();
+
         } catch (CardPaymentApiException e) {
             return Response
                     .status(Response.Status.NOT_FOUND.getStatusCode())
                     .entity(e.getMessage())
                     .build();
         }
-
-        return Response
-                .status(Response.Status.MOVED_PERMANENTLY.getStatusCode())
-                .entity(cardPaymentDao.novoPagamento())
-                .build();
     }
 
     @GET
     @Path("/{paymentNumber}")
     public Response recoverPaymentData(@PathParam("paymentNumber") Integer paymentNumber) {
 
-        return Response.status(Response.Status.FOUND).entity(cardPaymentDao.buscaPagamentoPorId(paymentNumber)).build();
+        try {
+            var pagamento = cardPaymentDao.buscaPagamentoPorId(paymentNumber);
+            return Response.status(Response.Status.FOUND).entity(cardPaymentDao.buscaPagamentoPorId(paymentNumber)).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+
+
     }
 
     @DELETE
@@ -156,17 +171,24 @@ public class PaymentController {
     @Transactional
     public Response deleteCardPayment(@PathParam("numeroPagamento") Integer numeroPagamento) {
 
-        CardPaymentEntity cardPayment = CardPaymentEntity.findById(numeroPagamento);
-
-        if (cardPayment != null) {
-            cardPayment.delete();
-            return Response
-                    .status(Response.Status.ACCEPTED)
-                    .entity(cardPayment)
-                    .build();
+//        CardPaymentEntity cardPayment = CardPaymentEntity.findById(numeroPagamento);
+//
+//        if (cardPayment != null) {
+//            cardPayment.delete();
+//            return Response
+//                    .status(Response.Status.ACCEPTED)
+//                    .entity(cardPayment)
+//                    .build();
+//        }
+//        else {
+//            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+//        }
+        if (cardPaymentDao.deletaPagamento(numeroPagamento)) {
+            return Response.status(Response.Status.OK).entity("Pagamento com Id " + numeroPagamento + " deletado.").build();
         }
         else {
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
     }
 }

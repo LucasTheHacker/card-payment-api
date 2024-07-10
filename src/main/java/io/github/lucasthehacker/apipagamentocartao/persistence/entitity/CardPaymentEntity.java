@@ -16,7 +16,8 @@ import lombok.Setter;
         @NamedNativeQuery(name = "CONSULTAR_PAGAMENTO_POR_ID", query = "SELECT Id, NumeroCartao , TipoPessoa, CPFCNPJCliente, MesVencimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento, FROM Pagamentos WHERE Id = :Id ", resultClass = CardPaymentEntity.class),
         @NamedNativeQuery(name = "CRIA_PAGAMENTO", query = "INSERT INTO Pagamentos (NumeroCartao, TipoPessoa, CPFCNPJCliente, MesVencimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento) VALUES (:NumeroCartao, :TipoPessoa, :CPFCNPJCliente, :MesVencimentoCartao, :AnoVencimentoCartao, :CVV, :ValorPagamento, :DataPagamento ) "),
         @NamedNativeQuery(name = "LISTA_PAGAMENTOS", query = "SELECT Id, NumeroCartao, TipoPessoa, CPFCNPJCliente, MesVencimentoCartao, AnoVencimentoCartao, CVV, ValorPagamento, DataPagamento FROM Pagamentos", resultClass = CardPaymentEntity.class),
-        @NamedNativeQuery(name = "ATUALIZA_PAGAMENTO", query = "UPDATE Pagamentos SET NumeroCartao = :NumeroCartao, TipoPessoa = :TipoPessoa, CPFCNPJCliente = :CPFCNPJCliente, MesVencimentoCartao = :MesVencimentoCartao, AnoVencimentoCartao = :AnoVencimentoCartao, CVV = :CVV, ValorPagamento = :ValorPagamento, DataPagamento = :DataPagamento WHERE Id = :Id")
+        @NamedNativeQuery(name = "ATUALIZA_PAGAMENTO", query = "UPDATE Pagamentos SET NumeroCartao = :NumeroCartao, TipoPessoa = :TipoPessoa, CPFCNPJCliente = :CPFCNPJCliente, MesVencimentoCartao = :MesVencimentoCartao, AnoVencimentoCartao = :AnoVencimentoCartao, CVV = :CVV, ValorPagamento = :ValorPagamento, DataPagamento = :DataPagamento WHERE Id = :Id"),
+        @NamedNativeQuery(name = "EXCLUIR_PAGAMENTO", query = "DELETE Pagamentos WHERE Id = :Id")
 })
 @RequestScoped
 public class CardPaymentEntity extends PanacheEntityBase implements AutoCloseable {  //Try-catch support

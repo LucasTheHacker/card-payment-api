@@ -82,6 +82,8 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
                 throw new CardPaymentApiException("CPF must be numeric");
             }
 
+            cardPaymentModel.setCPFCNPJCliente(aplicaMacaraCPF(cardPaymentModel.getCPFCNPJCliente()));
+
         }
         else {
             if (cardPaymentModel.getCPFCNPJCliente().length() > 20) {  //Aceita com espaço no final
@@ -90,10 +92,13 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
             String cPFCNPJ = cardPaymentModel.getCPFCNPJCliente().trim().replace(".", "").replace("-", "").replace("/", "").replace(" ", "");
             if (isLong(cPFCNPJ)) {
                 cardPaymentModel.setCPFCNPJCliente(cPFCNPJ);
+
             }
             else {
                 throw new CardPaymentApiException("CNPJ must be numeric");
             }
+
+            cardPaymentModel.setCPFCNPJCliente(aplicaMacaraCNPJ(cardPaymentModel.getCPFCNPJCliente()));
         }
     }
 
@@ -149,5 +154,22 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
                 throw new CardPaymentApiException("Erro inesperado no CVV. Verifique se foram informados apenas caracteres numericos.");
             }
         }
+    }
+
+    public String aplicaMacaraCPF(String cpf) {
+
+
+        String cpfMascarado = "***" + '.' + cpf.substring(3,6) + '.' + cpf.substring(6,9)  + '-' + "**";
+
+        return cpfMascarado;
+
+    }
+
+    public String aplicaMacaraCNPJ(String cnpj) {
+
+        String cnpjMascarado = cnpj.substring(0,2) + '.' + "***" + '.' + "***" + "/" + cnpj.substring(8,12)  + '-' + cnpj.substring(12);
+
+        return cnpjMascarado;
+
     }
 }

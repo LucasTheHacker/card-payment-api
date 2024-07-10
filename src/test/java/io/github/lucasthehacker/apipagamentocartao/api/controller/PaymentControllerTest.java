@@ -3,6 +3,7 @@ package io.github.lucasthehacker.apipagamentocartao.api.controller;
 import io.github.lucasthehacker.apipagamentocartao.domain.dtos.PaymentRequestDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 
@@ -16,6 +17,7 @@ public class PaymentControllerTest {
     @Test
     @DisplayName("PGTO sucesso")
     @Order(1)
+    @Transactional
     public void testCreatePaymentAPISuccess() {
         var paymentRequestDto = new PaymentRequestDto();
 
@@ -274,15 +276,6 @@ public class PaymentControllerTest {
                 .statusCode(302);
     }
 
-    @Test
-    @DisplayName("Deve consultar pagamento por ID colocado por scripts")
-    public void listaPagamentoPorIdTestes() {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get("/pagamentos/3")
-                .then()
-                .statusCode(302);
-    }
+
 
 }

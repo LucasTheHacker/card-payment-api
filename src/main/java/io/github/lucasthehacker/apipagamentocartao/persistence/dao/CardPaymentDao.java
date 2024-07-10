@@ -10,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import net.bytebuddy.implementation.bytecode.Throw;
 
 import java.time.LocalDateTime;
@@ -65,9 +66,16 @@ public class CardPaymentDao {
         try {
             TypedQuery<CardPaymentEntity> query = entityManager.createNamedQuery("CONSULTAR_PAGAMENTO_POR_ID", CardPaymentEntity.class);
             query.setParameter("Id", idPgto);
-            return query.getSingleResult();
+
+            var pgto = query.getSingleResult();
+            if (pgto != null) {
+                return pgto;
+            }
+            else {
+                throw new CardPaymentApiException("O pagamento informado nao existe na base de dados");
+            }
         } catch (Exception e) {
-            throw  new CardPaymentApiException("Um erro ocorreu ao tentar buscar o pagamento na base de dados");
+            throw  new CardPaymentApiException(e.getMessage());
     }
     }
 
@@ -80,9 +88,10 @@ public class CardPaymentDao {
         }
     }
 
-    public CardPaymentEntity atualizaPagamento(CardPaymentModel model, int idPgto) {
+    public void atualizaPagamento(CardPaymentModel model, int idPgto) {
 
         Query query = entityManager.createNamedQuery("ATUALIZA_PAGAMENTO");
+        query.setParameter("Id", idPgto);
         query.setParameter("NumeroCartao", model.getNumeroCartao());
         query.setParameter("TipoPessoa", model.getTipoPessoa());
         query.setParameter("CPFCNPJCliente", model.getCPFCNPJCliente());
@@ -90,24 +99,21 @@ public class CardPaymentDao {
         query.setParameter("AnoVencimentoCartao", model.getAnoVencimentoCartao());
         query.setParameter("CVV", model.getCVV());
         query.setParameter("ValorPagamento", model.getValorPagamento());
-
         LocalDateTime horaPagamento = LocalDateTime.now();
         DateTimeFormatter formatadorPagamento = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         query.setParameter("DataPagamento", horaPagamento.format(formatadorPagamento));
 
         query.executeUpdate();
-
-        return  buscaPagamentoPorId(idPgto);
     }
 
-//    public Conta buscaContaPorNumero(int numConta) {
-//        try {
-//            TypedQuery<Conta> query = em.createNamedQuery("CONSULTAR_CONTA_NUMERO", Conta.class);
-//            query.setParameter("numConta", numConta);
-//            return query.getSingleResult();
-//        } catch (NoResultException e) {
-//            throw new NoResultException("Conta não encontrada.");
-//        }
-//    }
+    public boolean deletaPagamento(int idPgto) {
+
+        Query query = entityManager.createNamedQuery("EXCLUIR_PAGAMENTO");
+        query.setParameter("Id", idPgto);
+
+        query.executeUpdate();
+        return true;
+    }
+
 
 }
