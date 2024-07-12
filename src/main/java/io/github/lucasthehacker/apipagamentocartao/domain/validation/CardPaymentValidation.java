@@ -158,7 +158,6 @@ public class CardPaymentValidation implements IFieldTypeValidation, ICardPayment
 
     public String aplicaMacaraCPF(String cpf) {
 
-
         String cpfMascarado = "***" + '.' + cpf.substring(3,6) + '.' + cpf.substring(6,9)  + '-' + "**";
 
         return cpfMascarado;

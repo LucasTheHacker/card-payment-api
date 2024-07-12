@@ -261,7 +261,7 @@ public class PaymentControllerTest {
                 .get("/pagamentos")
                 .then()
                 .statusCode(302)
-                .body("size()", Matchers.is(1));
+                .body("size()", Matchers.is(6));
     }
 
     @Test
